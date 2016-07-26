@@ -5,7 +5,8 @@
 			<h3>{{item.name}}</h3><br />
 			<p>{{item.description}}</p>
 			<p>
-				<a href="#">Edit</a> | <a href="#">Delete</a>
+				<a href="{{ url_for('editItem', item_id=item.id, category_id=category_id) }}">Edit</a> |
+				<a href="{{ url_for('deleteItem', category_id=category_id, item_id=item.id) }}">Delete</a>
 			</p>
 		</div>
 	</div>
