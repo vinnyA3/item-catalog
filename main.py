@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, request, flash
 from flask_assets import Environment, Bundle
 # sqlalchemy connection
 from sqlalchemy import create_engine
@@ -44,7 +44,22 @@ def getSpecificCategory(category_id):
 def getItem(category_id, item_id):
 	print item_id
 	item = session.query(Item).filter_by(id=item_id).one()
-	return render_template('categoryitem.html', item=item)
+	return render_template('categoryitem.html', item=item, category_id=category_id)
+
+@app.route('/categories/<int:category_id>/<int:item_id>/edit')
+def editItem(category_id, item_id):
+	item = session.query(Item).filter_by(id=item_id).one()
+	return render_template('edititem.html', item=item, category_id=category_id)
+
+@app.route('/categories/<int:category_id>/<int:item_id>/delete',
+			methods=['GET','POST'])
+def deleteItem(category_id, item_id):
+	if request.method == 'POST':
+		# test
+		return render_template('allcategories.html')
+	else:
+		item = session.query(Item).filter_by(id=item_id).one()
+		return render_template('deleteitem.html', item=item)
 
 
 if __name__ == "__main__":
