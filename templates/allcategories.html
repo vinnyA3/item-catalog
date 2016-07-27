@@ -2,6 +2,13 @@
 <div class="container">
 	<div class="row">
 	<div class="col-md-10 col-md-offset-1"></div>
+		{% with messages = get_flashed_messages() %}
+		{% if messages %}
+				{% for message in messages %}
+					<div class="alert alert-success"><strong>{{message}}</strong></div>
+				{% endfor %}
+		{% endif %}
+		{% endwith %}
 		<div class="card">
 			<div class="row">
 				<div class="col-md-6">
@@ -20,7 +27,9 @@
 				<div class="col-md-6">
 					<div class="card__right-module">
 						{% if queried_category_items %}
-						  <div class="card__edit"><i class="glyphicon glyphicon-plus"></i> &nbsp;<a href="{{ url_for('newItem', category_id=queried_category.id) }}">New Item</a></div>
+							{% if isLoggedIn == True %}
+						  	<div class="card__edit"><i class="glyphicon glyphicon-plus"></i> &nbsp;<a href="{{ url_for('newItem', category_id=queried_category.id) }}">New Item</a></div>
+							{% endif %}
 							<h3 class="card__title">{{ queried_category.name }} ({{queried_category_items | length}})</h3>
 							<ul>
 							{% for item in queried_category_items %}
