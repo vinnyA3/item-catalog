@@ -3,7 +3,7 @@
 	<div class="col-md-8 col-md-offset-2"></div>
 		<div class="card">
 			<h3>Edit: {{item.name}}</h3>
-			<form>
+			<form method="POST" enctype="multipart/form-data" action="{{ url_for('editItem', category_id=category_id, item_id=item.id ) }}">
 				<input type="text" class="form-control" name="name" value="{{item.name}}"/><br />
 				<input type="text" class="form-control" name="description" value="{{item.description}}"/><br />
 				<input type="submit" class="btn btn-primary" value="Edit Item"/> &nbsp;
