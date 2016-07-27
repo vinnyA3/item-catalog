@@ -1,5 +1,7 @@
 body {
-  padding-top: 70px; }
+  padding-top: 70px;
+  height: 100%;
+  width: 100%; }
 
   .card {
     width: 100%;
@@ -38,20 +40,40 @@ body {
           background-size: cover;
           background-position: center; }
 
-          .clear {
-            clear: both; }
+          .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: rgba(255, 255, 255,
+                        0.8) url('http://sampsonresume.com/labs/pIkfp.gif') 50% 50% no-repeat; }
 
-            .md-pd-top {
-              padding-top: 1em; }
+            body.loading {
+              overflow: hidden; }
 
-              .md-mg-top {
-                margin: 1em; }
+              body.loading .modal {
+                display: block; }
 
-                .md-sm-bottom {
-                  margin-bottom: 1.2em; }
+                .clear {
+                  clear: both; }
 
-                  .md-xlg-top {
-                    margin-top: 4.5em; }
+                  .md-pd-top {
+                    padding-top: 1em; }
 
-                    .md-xlg-bottom {
-                      margin-bottom: 7.5em; }
+                    .md-mg-top {
+                      margin: 1em; }
+
+                      .md-sm-bottom {
+                        margin-bottom: 1.2em; }
+
+                        .md-xlg-top {
+                          margin-top: 4.5em; }
+
+                          .md-xlg-bottom {
+                            margin-bottom: 7.5em; }
+
+                            .pd-xsx-top {
+                              padding-top: 0.6em; }
