@@ -29,9 +29,26 @@
 		    <!-- Collect the nav links, forms, and other content for toggling -->
 		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		      <ul class="nav navbar-nav pull-right">
-						<li><a href='#'><i class="glyphicon glyphicon-plus"></i> &nbsp;Login</a></li>
+						{% if isLoggedIn == False %}
+						<!--<li><a href="{{ url_for('showLogin')}}"><i class="glyphicon glyphicon-plus"></i> &nbsp;Login</a></li>-->
+						<li id="loginContext" class="pd-xsx-top">
+							<span class="g-signin"
+								data-scope="openid email"
+								data-clientid="942393827757-4uplberuk2o4kvfb7b1uhuo9o3pkcr8f.apps.googleusercontent.com"
+								data-redirecturi="postmessage"
+								data-accesstype="offline"
+								data-cookiepolicy="single_host_origin"
+								data-callback="signInCallback"
+								data-approvalprompt="force">
+							</span>
+						</li>
+						{% else %}
+						<li><a href="{{ url_for('gdisconnect') }}"><i class="glyphicon glyphicon-minus"></i> &nbsp;Logout</a></li>
+						{% endif %}
 						<li><a href="{{ url_for('getAllCategories') }}"><i class="glyphicon glyphicon-th-list"></i> &nbsp;Categories</a></li>
 		      </ul>
 		    </div><!-- /.navbar-collapse -->
 		  </div><!-- /.container-fluid -->
 	   </nav>
+		 <!-- Loading Modal -->
+		 <div class="modal"></div>
