@@ -7,43 +7,51 @@ body {
     background: #e2e2e2;
     box-shadow: 0px 4px 3px 2px rgba(0, 0, 0, 0.5);
     border-radius: 4px;
-    color: black; }
+    color: #191919; }
     .card--sm {
       width: 100%;
-      padding: 0.8em;
+      padding: 1.4em;
       background: #e2e2e2;
       box-shadow: 0px 4px 3px 2px rgba(0, 0, 0, 0.5);
       border-radius: 4px;
-      color: black;
+      color: #191919;
       display: inline-block; }
 
-.card__title {
-  color: black; }
+.card__img {
+  height: 130px;
+  width: 130px;
+  margin: 0 auto; }
 
-  .card__right-module {
-    text-align: left; }
+  .card__title {
+    color: black; }
 
-    .card__left-module {
+    .card__right-module {
       text-align: left; }
 
-      .hero {
-        width: 100%;
-        height: 500px;
-        background: url('../img/woman.jpg');
-        background-size: cover;
-        background-position: center; }
+      .card__left-module {
+        text-align: left; }
 
-        .clear {
-          clear: both; }
+        .hero {
+          width: 100%;
+          height: 500px;
+          background: url('../img/woman.jpg');
+          background-size: cover;
+          background-position: center; }
 
-          .md-pd-top {
-            padding-top: 1em; }
+          .clear {
+            clear: both; }
 
-            .md-mg-top {
-              margin: 1em; }
+            .md-pd-top {
+              padding-top: 1em; }
 
-              .md-xlg-top {
-                margin-top: 4.5em; }
+              .md-mg-top {
+                margin: 1em; }
 
-                .md-xlg-bottom {
-                  margin-bottom: 7.5em; }
+                .md-sm-bottom {
+                  margin-bottom: 1.2em; }
+
+                  .md-xlg-top {
+                    margin-top: 4.5em; }
+
+                    .md-xlg-bottom {
+                      margin-bottom: 7.5em; }
