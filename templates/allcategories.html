@@ -13,6 +13,9 @@
 			<div class="row">
 				<div class="col-md-6">
 					<div class="card__left-module">
+						{% if isLoggedIn == True %}
+							<div class="card__edit"><i class="glyphicon glyphicon-plus"></i> &nbsp;<a href="{{ url_for('addNewCategory') }}">New Category</a></div>
+						{% endif %}
 						<h3 class="card__title">Categories</h3>
 						<ul>
 							{% for c in categories %}
@@ -36,9 +39,19 @@
 									<li><a href="{{ url_for('getItem', category_id=item.category_id, item_id=item.id) }}">{{item.name}}</a></li>
 							{% endfor %}
 							</ul>
+						{% elif queried_category_items == [] %}
+							{% if isLoggedIn == True %}
+								<div class="card__edit"><i class="glyphicon glyphicon-plus"></i> &nbsp;<a href="{{ url_for('newItem', category_id=queried_category.id) }}">New Item</a></div>
+							{% endif %}
+							<h3 class="card__title">{{ queried_category.name }} ({{queried_category_items | length}})</h3>
+							<p>No items yet.</p>
 						{% else %}
-							<h3 class="card__title">Latest Topics</h3>
-							<p>Null</p>
+							<h3 class="card__title">Latest Items</h3>
+							<ul>
+							{% for item in latest_items %}
+								<li><a href="{{ url_for('getItem', category_id=item.category.id, item_id=item.id) }}">{{ item.name }}</a> &nbsp;({{item.category.name}})</li>
+							{% endfor %}
+							</ul>
 						{% endif %}
 					</div>
 				</div>
