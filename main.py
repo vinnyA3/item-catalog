@@ -1,8 +1,9 @@
-from flask import Flask, render_template, url_for, request, redirect, flash
+from flask import Flask, render_template, url_for, request, redirect, flash, \
+jsonify
 from flask_assets import Environment, Bundle
 # sqlalchemy connection
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, joinedload
 from database_setup import Base, Category, Item
 
 # new imports
@@ -53,16 +54,6 @@ def provide_login_status():
 		return dict(isLoggedIn=False, STATE=state)
 
 
-# create state token to prevent request forgery
-# Store it in the session for later validation
-@app.route('/login')
-def showLogin():
-	state = ''.join(random.choice(string.ascii_uppercase + string.digits) \
-					for x in range(32))
-	login_session['state'] = state
-	return render_template("login.html", STATE = state)
-
-
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
 
@@ -79,7 +70,7 @@ def gconnect():
 		oauth_flow.redirect_uri = 'postmessage'
 		credentials = oauth_flow.step2_exchange(code)
 	except FlowExchangeError:
-		response = make_response(json.dumps('Failed to upgrade the authorization code'),
+		response = make_response(json.dumps('Failed to upgrade auth code'),
 							401)
 		response.headers['Content-Type'] = 'application/json'
 		return response
@@ -87,7 +78,9 @@ def gconnect():
 	# debug
 	# print credentials.access_token
 	access_token = credentials.access_token
-	url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s' % access_token)
+	url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s' \
+		% access_token)
+
 	h = httplib2.Http()
 	result = json.loads(h.request(url, 'GET')[1])
 	# if there was an error in the access token info, abort mission!
@@ -131,21 +124,8 @@ def gconnect():
 	login_session['picture'] = data['picture']
 	login_session['email'] = data['email']
 
-	# see if the user exists, if the user does not, create one
-	# if not getUserID(login_session['email']):
-	#	user_id = createUser(login_session)
-	#	login_session['user_id'] = user_id
-
-	output = ''
-	output += '<h1>Welcome, '
-	output += login_session['username']
-	output += '!</h1>'
-	output += '<img src="'
-	output += login_session['picture']
-	output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-	flash("you are now logged in as %s" % login_session['username'])
 	print "done!"
-	return output
+	return "Great!"
 
 # DISCONNECT - revoke current user's token and reset their login_session
 @app.route('/gdisconnect')
@@ -180,19 +160,34 @@ def gdisconnect():
 		return redirect(url_for('getAllCategories'))
 
 	else:
-		response = make_response(json.dumps('Failed to revoke user token.'), 400)
+		response = make_response(json.dumps('Failed to revoke user token'), 400)
 		response.headers['Content-Type'] = 'application/json'
 		return response
+
+# API Endpoint: get all items
+@app.route('/items/all/JSON')
+def getAllItemsJSON():
+	items = session.query(Item).all()
+	return jsonify(Items = [i.serialize for i in items])
 
 
 @app.route('/')
 def home():
 	return render_template("home.html")
 
+
 @app.route('/categories/')
 def getAllCategories():
 	categories = session.query(Category).all()
-	return render_template('allcategories.html', categories = categories)
+	# get the latest items
+	latest_items = session.query(Item).order_by(Item.id.desc())\
+	.join("category").all()
+	# debug
+	# for i in latest_items:
+	#	print i.category.name
+	return render_template('allcategories.html', categories = categories,
+						latest_items=latest_items)
+
 
 @app.route('/categories/<int:category_id>/')
 def getSpecificCategory(category_id):
@@ -207,10 +202,26 @@ def getSpecificCategory(category_id):
 	queried_category = session.query(Category).filter_by(id=category_id).one()
 	queried_category_items = session.query(Item).filter_by(
 		category_id=queried_category.id).all()
+
 	return render_template('allcategories.html', categories=categories,
 					queried_category=queried_category,
 					queried_category_items=queried_category_items,
 					loggedIn=loggedIn)
+
+
+@app.route('/categories/new',methods=['GET','POST'])
+def addNewCategory():
+	if request.method == 'POST':
+		if request.form['name'] != '':
+			# create a new item
+			newCategory = Category(name=request.form['name'])
+			session.add(newCategory)
+			session.commit()
+			flash('Category has been added!')
+			return redirect('getAllCategories')
+	else:
+		return render_template('newcategory.html')
+
 
 @app.route('/categories/<int:category_id>/<int:item_id>/')
 def getItem(category_id, item_id):
@@ -226,7 +237,7 @@ def getItem(category_id, item_id):
 						category_id=category_id, loggedIn = loggedIn)
 
 
-@app.route('/categories/<int:category_id>/new',methods=['GET', 'POST'])
+@app.route('/categories/<int:category_id>/new',methods=['GET','POST'])
 def newItem(category_id):
 	if request.method == 'POST':
 		if request.form['name'] != '':
@@ -237,9 +248,10 @@ def newItem(category_id):
 			session.add(newItem)
 			session.commit()
 			flash('Item has been added!')
-			return redirect('getSpecificCategory', category_id=category_id)
+			return redirect(url_for('getSpecificCategory',
+							category_id=category_id))
 	else:
-		return render_template(url_for('newitem.html', category_id=category_id))
+		return render_template('newitem.html', category_id=category_id)
 
 
 @app.route('/categories/<int:category_id>/<int:item_id>/edit',
@@ -248,8 +260,11 @@ def editItem(category_id, item_id):
 	# get the edited item info
 	edit_item = session.query(Item).filter_by(id=item_id).one()
 	if request.method == 'POST':
-		edit_name = request.form['name'] if request.form['name'] != '' else edit_item.name
-		edit_desc = request.form['description'] if request.form['description'] != '' else edit_item.description
+		edit_name = request.form['name'] \
+		if request.form['name'] != '' else edit_item.name
+
+		edit_desc = request.form['description'] \
+		if request.form['description'] != '' else edit_item.description
 
 		edit_item.name = edit_name
 		edit_item.description = edit_desc
@@ -263,6 +278,7 @@ def editItem(category_id, item_id):
 	item = session.query(Item).filter_by(id=item_id).one()
 	return render_template('edititem.html', item=item, category_id=category_id)
 
+
 @app.route('/categories/<int:category_id>/<int:item_id>/delete',
 			methods=['GET','POST'])
 def deleteItem(category_id, item_id):
@@ -272,7 +288,7 @@ def deleteItem(category_id, item_id):
 		session.delete(item)
 		session.commit()
 		flash('Item has been deleted!')
-		return redirect('getSpecificCategory', category_id=category_id)
+		return redirect(url_for('getSpecificCategory', category_id=category_id))
 	else:
 		return render_template('deleteitem.html', category_id=category_id,
 							item=item)
