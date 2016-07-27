@@ -4,7 +4,54 @@
 		<span class="footer-love pull-right md-pd-top">Made with <i class="glyphicon glyphicon-heart"></i></span>
   </div>
 </nav>
+<!-- jquery / bootstrap -->
+<!-- if we are NOT logged in, load jQuery so we can make a call to google -->
+{% if isLoggedIn == False %}
+<script src="//apis.google.com/js/platform.js?onload=start" async defer></script>
+<script>
+
+	function signInCallback(authResult) {
+
+		$body = $("body");
+
+		$body.addClass("loading");
+
+		if (authResult['code']) {
+			$('.g-signin').attr('style', 'display: none');
+			$('#loginContext').html('Logging in...');
+			// Send the one-time code to the server, if the server responds, write
+			// a login successful message to the web page and then redirect back to
+			// the main restaurants page
+			$.ajax({
+				type: 'POST',
+				url: '/gconnect?state={{STATE}}',
+				processData: false,
+				global: true,
+				contentType: 'application/octet-stream; charset=utf-8',
+				data: authResult['code'],
+				success: function(result) {
+					if (result) {
+						$('#loginContext').html('Successful! Logging in...')
+						setTimeout(function() {
+							$body.removeClass("loading");
+							window.location.href="/categories"
+						}, 1200);
+					} else if (authResult['error']) {
+						$body.removeClass("loading");
+						alert('There was an error: ' + authResult['error']);
+					} else {
+						alert('Failed to make a server side call. Check your configuration and console.');
+					}
+				},
+				error: function(error) {
+					alert(error.responseText);
+				}
+			})
+		}
+	};
+</script>
+{% endif %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </body>
 </html>
