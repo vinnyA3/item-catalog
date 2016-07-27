@@ -1,0 +1,15 @@
+{% include "partials/header.html" %}
+<div class="container">
+	<div class="col-md-8 col-md-offset-2"></div>
+		<div class="card">
+			<h3>Add Item</h3>
+			<form method="POST" enctype="multipart/form-data" action="{{ url_for('newItem', category_id=category_id ) }}">
+				<input type="text" class="form-control" name="name" placeholder="Name"/><br />
+				<input type="text" class="form-control" name="description" placeholder="Description"/><br />
+				<input type="submit" class="btn btn-primary" value="Add Item"/> &nbsp;
+				<a href="{{ url_for('getSpecificCategory', category_id=category_id) }}" class="btn btn-default">Cancel</a>
+			</form>
+		</div>
+	</div>
+</div>
+{% include "partials/footer.html" %}
