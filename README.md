@@ -14,32 +14,35 @@ screenshots:
 
 ---
 
+
 Requirements:
 ------------
 
 1. Python (installed on your machine or VM)
 2. [pip](https://pypi.python.org/pypi/pip) (package manager for python)
 3. [Flask](http://flask.pocoo.org/) (micro-framework for Python)
-..* Unix install with: `pip install Flask`
-4.  [SQLite](https://www.sqlite.org/) (SQLite3 is an extremely lightweight SQL database engine that is self-contained and serverless) 
+  * Unix install with: `pip install Flask`
+4.  [SQLite](https://www.sqlite.org/) (SQLite3 is an extremely lightweight SQL database engine that is self-contained and serverless)
 5. [SQLAlchemy](http://www.sqlalchemy.org/) (Python SQL toolkit and ORM)
+
 
 
 Installation:
 -------------
 
-1. Clone this repo: ``
+1. Clone this repo: `https://github.com/vinnyA3/item-catalog.git`
 2. Install all necessary requirements (see above ^)
 3. Initialize the database: `python database_setup.py`
 4. (Optional) Populate the database with default data: `python filldatabase.py`
-..* Note: you can skip this step and populate with your own data in the application
+  * Note: you can skip this step and populate with your own data in the application
 5. Start the application: `python main.py`
 6. Navigate to: <http://localhost:8080/>
-..* Note: Make sure there are no other processes running on port 8080, otherwise change the port number at the end of main.py
+  * Note: Make sure there are no other processes running on port 8080, otherwise change the port number at the end of main.py
 7. Play around and have fun!
 
 
 **Note:** If you edit the app styles, do so in the sass folder.  You can write normal css.  Also, do not edit the client_secret.json file!
+
 
 
 API:
