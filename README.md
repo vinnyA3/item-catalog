@@ -22,8 +22,9 @@ Requirements:
 2. [pip](https://pypi.python.org/pypi/pip) (package manager for python)
 3. [Flask](http://flask.pocoo.org/) (micro-framework for Python)
   * Unix install with: `pip install Flask`
-4.  [SQLite](https://www.sqlite.org/) (SQLite3 is an extremely lightweight SQL database engine that is self-contained and serverless)
-5. [SQLAlchemy](http://www.sqlalchemy.org/) (Python SQL toolkit and ORM)
+5. [Flask-Assets](https://flask-assets.readthedocs.io/en/latest/) (Flask-Assets helps you to integrate webassets into your Flask application)	
+6.  [SQLite](https://www.sqlite.org/) (SQLite3 is an extremely lightweight SQL database engine that is self-contained and serverless)
+7. [SQLAlchemy](http://www.sqlalchemy.org/) (Python SQL toolkit and ORM)
 
 
 
