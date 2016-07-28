@@ -5,6 +5,6 @@ Categorize.Me
 
 ---
 
-![alt-text](https://github.com/vinnyA3/github-screenshots/home.png)
+![home page screenshot](https://github.com/vinnyA3/github-screenshots/home.png)
 
-![alt-text](https://github.com/vinnyA3/github-screenshots/app.png)
+![app categories screenshot](https://github.com/vinnyA3/github-screenshots/app.png)
