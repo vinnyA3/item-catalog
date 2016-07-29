@@ -20,7 +20,10 @@
 						<ul>
 							{% for c in categories %}
 							<li>
-								<a href="{{ url_for('getSpecificCategory', category_id=c.id) }}"> {{ c.name }} </a>
+								<a href="{{ url_for('getSpecificCategory', category_id=c.id) }}"> {{ c.name }} </a> &nbsp;
+								{% if isLoggedIn == True %}
+								<a href="{{ url_for('deleteCategory', category_id=c.id) }}"><i class="glyphicon glyphicon-minus"></i> Delete</a>
+								{% endif %}
 							</li>
 							{% endfor %}
 						</ul>
