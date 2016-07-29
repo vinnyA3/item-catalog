@@ -1,5 +1,7 @@
 from flask import Flask, render_template, url_for, request, redirect, flash, \
 jsonify
+# import wraps for decorator functionality
+from functools import wraps
 from flask_assets import Environment, Bundle
 # sqlalchemy connection
 from sqlalchemy import create_engine
@@ -40,6 +42,7 @@ DBSession = sessionmaker(bind = engine)
 session = DBSession()
 
 # context processor to allow all our templates know if we are logged in or not
+# ** used to display whether certain markup should be visible ie: delete link
 @app.context_processor
 def provide_login_status():
 	if 'username' in login_session:
@@ -52,6 +55,20 @@ def provide_login_status():
 		login_session['state'] = state
 		# the user is logged in, lets let the templates know
 		return dict(isLoggedIn=False, STATE=state)
+
+# decorator -> protect routes that need to be authenticated
+# if the use is logged in, give them access to protected routes, else, redirect
+# them to the categories page with a a flash message stating that they should be
+# logged in
+def login_required(fn):
+	@wraps(fn)
+	def dec(*args, **kwargs):
+		if 'username' in login_session:
+			return fn(*args, **kwargs)
+		else:
+			flash('Please log in to do that!')
+			return redirect(url_for('getAllCategories'))
+	return dec
 
 
 @app.route('/gconnect', methods=['POST'])
@@ -210,6 +227,7 @@ def getSpecificCategory(category_id):
 
 
 @app.route('/categories/new',methods=['GET','POST'])
+@login_required
 def addNewCategory():
 	if request.method == 'POST':
 		if request.form['name'] != '':
@@ -224,6 +242,7 @@ def addNewCategory():
 
 
 @app.route('/categories/<int:category_id>/delete', methods=['GET','POST'])
+@login_required
 def deleteCategory(category_id):
 	# get the category
 	category = session.query(Category).filter_by(id=category_id).one()
@@ -259,6 +278,7 @@ def getItem(category_id, item_id):
 
 
 @app.route('/categories/<int:category_id>/new',methods=['GET','POST'])
+@login_required
 def newItem(category_id):
 	if request.method == 'POST':
 		if request.form['name'] != '':
@@ -277,6 +297,7 @@ def newItem(category_id):
 
 @app.route('/categories/<int:category_id>/<int:item_id>/edit',
 			methods=['GET','POST'])
+@login_required
 def editItem(category_id, item_id):
 	# get the edited item info
 	edit_item = session.query(Item).filter_by(id=item_id).one()
@@ -302,6 +323,7 @@ def editItem(category_id, item_id):
 
 @app.route('/categories/<int:category_id>/<int:item_id>/delete',
 			methods=['GET','POST'])
+@login_required
 def deleteItem(category_id, item_id):
 	# get the item
 	item = session.query(Item).filter_by(id=item_id).one()
@@ -317,5 +339,6 @@ def deleteItem(category_id, item_id):
 
 if __name__ == "__main__":
 	app.secret_key = 'pokemongohastakenovertheworld'
-	app.debug = True
+	# comment out for production
+	# app.debug = True
 	app.run("127.0.0.1", port = 8080)
