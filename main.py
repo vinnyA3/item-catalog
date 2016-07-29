@@ -218,9 +218,30 @@ def addNewCategory():
 			session.add(newCategory)
 			session.commit()
 			flash('Category has been added!')
-			return redirect('getAllCategories')
+			return redirect(url_for('getAllCategories'))
 	else:
 		return render_template('newcategory.html')
+
+
+@app.route('/categories/<int:category_id>/delete', methods=['GET','POST'])
+def deleteCategory(category_id):
+	# get the category
+	category = session.query(Category).filter_by(id=category_id).one()
+
+	if request.method == 'POST':
+		# get the category items
+		items = session.query(Item).filter_by(category_id=category_id).all()
+		# if we have items, then stage them to be deleted, if not, then don't
+		if items != [] or None:
+			for i in items:
+				session.delete(i)
+		# stage the returned query object to be deleted
+		session.delete(category)
+		session.commit()
+		# return to the 'all categories page'
+		return redirect(url_for('getAllCategories'))
+	else:
+		return render_template('deletecategory.html', category=category)
 
 
 @app.route('/categories/<int:category_id>/<int:item_id>/')
